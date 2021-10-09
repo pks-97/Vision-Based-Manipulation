@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="pudding_box">
+  <link name="box_link">
+    <contact>
+      <lateral_friction value="0.8"/>
+      <rolling_friction value="0.001"/>
+      <spinning_friction value="0.001"/>
+    </contact>
+    <visual>
+      <geometry>
+        <mesh filename="package://ycb_models_desc/models/ycb/008_pudding_box/poisson/textured.obj"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="1 1 1"/>
+        <mesh filename="package://ycb_models_desc/models/ycb/008_pudding_box/poisson/textured.obj"/>
+      </geometry>
+    </collision>
+    <inertial>
+       <mass value="1" />
+       <origin xyz="0 0 0" rpy="0 0 0" />
+       <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
+    </inertial>
+  </link>
+  
+  <gazebo reference="box_link">
+    <material>Gazebo/Magenta</material>
+  </gazebo>
+</robot>
+

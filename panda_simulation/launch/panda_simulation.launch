@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <launch>
   <!-- Load robot description onto parameter server -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find franka_description)/robots/panda_arm_camera.xacro" />
@@ -22,4 +23,7 @@
   <include file="$(find panda_moveit_config)/launch/move_group.launch">
     <arg name="load_robot_description" value="false" />
   </include>
+  
+  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner_object" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/mustard_bottle.urdf -urdf -x 0.75 -y 0.75 -model mustard_bottle"/>
 </launch>
