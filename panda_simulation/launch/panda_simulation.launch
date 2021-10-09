@@ -20,6 +20,6 @@
 
   <!-- Finally, launch moveit -->
   <include file="$(find panda_moveit_config)/launch/move_group.launch">
-    <arg name="load_robot_description" value="true" />
+    <arg name="load_robot_description" value="false" />
   </include>
 </launch>
