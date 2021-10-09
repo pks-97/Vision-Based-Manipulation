@@ -1,0 +1,25 @@
+<launch>
+  <!-- Load robot description onto parameter server -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find franka_description)/robots/panda_arm_camera.xacro" />
+
+  <!-- Necessary transformation frames -->
+  <node name="map_world_frame" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 map world 100" />
+  <node name="world_panda_frame" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 world panda_link0 100" />
+
+  <!-- Spawn the robot in gazebo -->
+  <node name="spawn_franka_urdf" pkg="gazebo_ros" type="spawn_model"
+  	args="-param robot_description -urdf -model robot" output="screen" />
+
+  <!-- Launch gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="true" />
+  </include>
+
+  <!-- Launch controllers -->
+  <include file="$(find panda_moveit_controller)/launch/main.launch" />
+
+  <!-- Finally, launch moveit -->
+  <include file="$(find panda_moveit_config)/launch/move_group.launch">
+    <arg name="load_robot_description" value="true" />
+  </include>
+</launch>
