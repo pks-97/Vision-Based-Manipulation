@@ -12,7 +12,7 @@
 
   <!-- Launch gazebo -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="true" />
+    <arg name="paused" value="false" />
   </include>
 
   <!-- Launch controllers -->
