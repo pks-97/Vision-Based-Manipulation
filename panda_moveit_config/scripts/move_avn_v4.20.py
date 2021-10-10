@@ -60,12 +60,14 @@ class moveit_planning(object):
     def go_to_sleep_position(self):                                           #function for taking robot to home position
         group = self.group
         joint_goal = group.get_current_joint_values()
-        joint_goal[0] = math.radians(-95.59)
-        joint_goal[1] = math.radians(-1.26)
-        joint_goal[2] = math.radians(12.15)
-        joint_goal[3] = math.radians(0.00)
-        joint_goal[4] = math.radians(100.00)
-        joint_goal[5] = math.radians(0.00)
+        print(joint_goal)
+        joint_goal[0] = -0.63
+        joint_goal[1] = 0.69
+        joint_goal[2] = 1.35
+        joint_goal[3] = -0.96
+        joint_goal[4] = -0.88
+        joint_goal[5] = 1.21
+        joint_goal[6] = 0.41
     
         group.go(joint_goal, wait=True)
 
@@ -111,7 +113,6 @@ class moveit_planning(object):
         if len(plan.joint_trajectory.points)==0: 	
             return 0
         else: 	
-            self.display_trajectory(plan)
             print("Plan made...Starting Execution")
             a = raw_input()
             if a == 'y':
@@ -123,6 +124,7 @@ class moveit_planning(object):
 
 def move_abb_callback():
     global abb
+    abb.go_to_sleep_position()
     #abb.execute()
 
 if __name__ == '__main__':

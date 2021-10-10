@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot name="mustard_bottle">
   <link name="bottle_link">
+      <contact>
+      <lateral_friction value="0.8"/>
+      <rolling_friction value="0.001"/>
+      <spinning_friction value="0.001"/>
+    </contact>
     <visual>
       <geometry>
         <mesh filename="package://ycb_models_desc/models/ycb/006_mustard_bottle/poisson/textured.obj"/>
