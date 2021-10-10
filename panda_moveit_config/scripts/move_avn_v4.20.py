@@ -84,42 +84,42 @@ class moveit_planning(object):
     
         display_trajectory_publisher.publish(display_trajectory) 
 
-    def execute(self):
-        global object_frame_pub
-        group = self.group
-        robot = self.robot
-        current_state = robot.get_current_state()
-        wpose = geometry_msgs.msg.PoseStamped()
-        wpose.header.stamp = rospy.Time()
-        wpose.header.frame_id = "/world"
+#     def execute(self):
+#         global object_frame_pub
+#         group = self.group
+#         robot = self.robot
+#         current_state = robot.get_current_state()
+#         wpose = geometry_msgs.msg.PoseStamped()
+#         wpose.header.stamp = rospy.Time()
+#         wpose.header.frame_id = "/world"
 
-        print("original_target_XYZ",target.position)
-        wpose.pose.position.x = target.position.x + 0.065
-        wpose.pose.position.y = target.position.y  - 0.025
-        wpose.pose.position.z = target.position.z + 0.02
-        wpose.pose.orientation.x = 0 #target.orientation.x
-        wpose.pose.orientation.y = 1 #target.orientation.y
-        wpose.pose.orientation.z = 0 #target.orientation.z
-        wpose.pose.orientation.w = 0 #target.orientation.w
-        #object_frame_pub,publish(wpose)
-        print("Planning for the target :--> ")
-        print(wpose)
-        self.draw_visualisation_marker(wpose)
-        group.set_planner_id("RRTConnectkConfigDefault")
-        group.set_planning_time(5)
-        group.set_start_state(current_state)
-        group.set_pose_target(wpose,"tool0")
-        plan = group.plan()
-        if len(plan.joint_trajectory.points)==0:    
-            return 0
-        else:   
-            print("Plan made...Starting Execution")
-            a = raw_input()
-            if a == 'y':
-                group.execute(plan,wait=True)
-                print("Executed the Target")
-                rospy.sleep(0.1)
-            return 1 
+#         # print("original_target_XYZ",target.position)
+#         wpose.pose.position.x = 0.65
+#         wpose.pose.position.y = 0.042
+#         wpose.pose.position.z = 0.74
+#         wpose.pose.orientation.x = 0 #target.orientation.x
+#         wpose.pose.orientation.y = 1 #target.orientation.y
+#         wpose.pose.orientation.z = 0 #target.orientation.z
+#         wpose.pose.orientation.w = 0 #target.orientation.w
+#         #object_frame_pub,publish(wpose)
+#         print("Planning for the target :--> ")
+#         print(wpose)
+#         group.set_planner_id("RRTConnectkConfigDefault")
+#         group.set_planning_time(5)
+#         group.set_start_state(current_state)
+#         group.set_pose_target(wpose,"panda_link7")
+
+#         plan = group.go()
+#         print("Pratyush")
+#         print(plan)
+#         print("Plan made...Starting Execution")
+#         group.execute(plan,wait=True)
+#         ans = Float64()
+#         ans.data = 1.0
+#         pub.publish(ans)
+#         print("Executed the Target")
+#         rospy.sleep(0.1)
+#         return 1 
     
 
 def move_abb_callback():
