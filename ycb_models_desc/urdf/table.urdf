@@ -25,12 +25,14 @@
    <visual>
      <origin xyz="0 0 0" rpy="0 0 0" />
      <geometry>
-       <box size="2.0 3.0 0.1" />
+       <box size="1.5 2.0 0.02" />
      </geometry>
-     <material name="Cyan">
-       <color rgba="0 1.0 1.0 1.0"/>
-     </material>
    </visual>
+    <collision>
+      <geometry>
+        <box size="2.0 3.0 0.02" />
+      </geometry>
+    </collision>
     <inertial>
             <mass value="5" />
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -299,7 +301,7 @@
   </gazebo> -->
 
   <gazebo reference="base_link">
-    <material>Gazebo/Orange</material>
+    <material>Gazebo/Black</material>
   </gazebo>
 
  <!--  <gazebo reference="camera_link">
