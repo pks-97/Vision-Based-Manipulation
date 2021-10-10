@@ -4,6 +4,7 @@
 
   <!-- Launch controllers -->
   <node name="panda_moveit_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" args="joint_state_controller gazebo_ros_control panda_finger1_controller panda_finger2_controller" ns="/panda" />
+  
   <!-- Launch robot_state_publisher -->
   <node name="panda_moveit_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true">
     <remap from="joint_states" to="panda/joint_states" />
