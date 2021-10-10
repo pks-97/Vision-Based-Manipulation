@@ -23,12 +23,6 @@
     </inertial>
   </link>
   
-  <link name="world"/>
-  <joint name="fixed" type="fixed">
-    <parent link="world"/>
-    <child link="box_link"/>
-  </joint>
-  
   <gazebo reference="box_link">
     <material>Gazebo/Magenta</material>
   </gazebo>
