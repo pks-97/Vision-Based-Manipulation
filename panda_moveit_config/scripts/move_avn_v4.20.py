@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import tf
 import sys
 import math
 import copy
@@ -22,50 +21,40 @@ class moveit_planning(object):
     def __init__(self):                                                             
         super(moveit_planning, self).__init__()
         
-        moveit_commander.roscpp_initialize(sys.argv)                               
+        moveit_commander.roscpp_initialize(['joint_states:=/panda/joint_states'])
         rospy.init_node('move_avn',anonymous=True)                                 
 
         robot = moveit_commander.RobotCommander()
-
         scene = moveit_commander.PlanningSceneInterface()
-        
         group_name = "panda_arm"
         group = moveit_commander.MoveGroupCommander(group_name)
+        #group.set_pose_reference_frame("world")
         
-        group.set_pose_reference_frame("panda_link_0")
-
-        ## We create a `DisplayTrajectory`_ publisher which is used later to publish trajectories for RViz to visualize:
-        display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
-        
-        unused_variable = os.system("clear")
-
-        planning_frame = group.get_planning_frame()
-        print "-----Planning Frame:----- %s" % planning_frame
-        eef_link = group.get_end_effector_link()           
-        print "-----End effector:----- %s" % eef_link 
         current_state = robot.get_current_state()
-        print "------currant state:----- %s" %current_state
-        currant_rpy = group.get_current_rpy(end_effector_link = "tool0")
-        print "-----currant rpy----- %s" %currant_rpy
-        currant_pose = group.get_current_pose(end_effector_link = "tool0")
-        print "-----currant pose----- %s" %currant_pose
+        print("------currant state:----- %s" %current_state)
+        planning_frame = group.get_planning_frame()
+        print("-----Planning Frame:----- %s" % planning_frame)
+        eef_link = group.get_end_effector_link()           
+        print("-----End effector:----- %s" % eef_link)
+        currant_rpy = group.get_current_rpy(end_effector_link = "panda_link7")
+        print("-----currant rpy----- %s" %currant_rpy)
+        currant_pose = group.get_current_pose(end_effector_link = "panda_link7")
+        print("-----currant pose----- %s" %currant_pose)
 
         self.robot = robot
         self.scene = scene
         self.group = group
-        self.display_trajectory_publisher = display_trajectory_publisher
         self.planning_frame = planning_frame
         self.eef_link = eef_link
 
     def print_general_info(self):
-        os.system("clear")   
         group = self.group
         planning_frame = group.get_planning_frame()
-        print "Planning Frame: %s" % planning_frame
+        print("Planning Frame: %s" % planning_frame)
         eef_link = group.get_end_effector_link()  
-        print "End effector: %s" % eef_link 
+        print("End effector: %s" % eef_link)
         current_state = robot.get_current_state()
-        print "currant state: %s" %current_state
+        print("currant state: %s" %current_state)
 
 
     def go_to_sleep_position(self):                                           #function for taking robot to home position
@@ -81,9 +70,7 @@ class moveit_planning(object):
         group.go(joint_goal, wait=True)
 
         group.stop()
-        rospy.sleep(1)	
-        current_joints = self.group.get_current_joint_values()
-        print [math.degrees(joint_val) for joint_val in current_joints]
+        rospy.sleep(1)
         return
 
     def display_trajectory(self, plan):
@@ -95,36 +82,14 @@ class moveit_planning(object):
     
         display_trajectory_publisher.publish(display_trajectory) 
 
-    def draw_visualisation_marker(self,wpose):
-        global draw_marker
-        marker = Marker()
-        marker.header.frame_id = "/base"
-        marker.type = marker.ARROW
-        marker.scale.x = 0.05
-        marker.scale.y = 0.05
-        marker.scale.z = 0.05
-        marker.color.a = 1.0
-        marker.color.r = 1.0
-        marker.color.g = 0.0
-        marker.color.b = 1.0
-        marker.pose.orientation.x = wpose.pose.orientation.x
-        marker.pose.orientation.y = wpose.pose.orientation.y
-        marker.pose.orientation.z = wpose.pose.orientation.z
-        marker.pose.orientation.w = wpose.pose.orientation.w
-        marker.pose.position.x = wpose.pose.position.x
-        marker.pose.position.y = wpose.pose.position.y
-        marker.pose.position.z = wpose.pose.position.z
-        draw_marker.publish(marker)
-
-    def execute(self,target):
+    def execute(self):
         global object_frame_pub
         group = self.group
         robot = self.robot
         current_state = robot.get_current_state()
         wpose = geometry_msgs.msg.PoseStamped()
         wpose.header.stamp = rospy.Time()
-        wpose.header.frame_id = "/base"
-        euler = tf.transformations.euler_from_quaternion((target.orientation.x,target.orientation.y,target.orientation.z,target.orientation.w), axes = "sxyz")
+        wpose.header.frame_id = "/world"
 
         print("original_target_XYZ",target.position)
         wpose.pose.position.x = target.position.x + 0.065
@@ -144,66 +109,25 @@ class moveit_planning(object):
         group.set_pose_target(wpose,"tool0")
         plan = group.plan()
         if len(plan.joint_trajectory.points)==0: 	
-            print"The trajectory execution aborted due to incorrect target points.....No plan made"
             return 0
         else: 	
             self.display_trajectory(plan)
-            print"Plan made...Starting Execution"
+            print("Plan made...Starting Execution")
             a = raw_input()
             if a == 'y':
                 group.execute(plan,wait=True)
-                print"Executed the Target"
+                print("Executed the Target")
                 rospy.sleep(0.1)
             return 1 
     
 
-def move_abb_callback(target_array):
+def move_abb_callback():
     global abb
-    global start_scanning
-    #abb.go_to_sleep_position()
-    abb.go_to_wake_position()
-    no_picked=0
-    print(target_array)
-    for i in range(len(target_array.poses)):
-        abb.go_to_wake_position()
-        no_picked += abb.execute(target_array.poses[i])
-        print i
-        #raw_input()
-        #if picked == 1:
-        #    break
-        #else:
-        #    abb.go_to_wake_position()
-        #    continue
-        abb.go_to_wake_position()
-        abb.go_to_sleep_position()
-        rospy.sleep(0.1)
-        abb.turn_vacuum_off()
-    #abb.go_to_sleep_position()
-    abb.turn_vacuum_off()
-    start_scanning.publish(1.0) 
+    #abb.execute()
 
 if __name__ == '__main__':
-
-    picked = 0    
     abb = moveit_planning()
-    robot_state_pub = rospy.Publisher('robot_state',std_msgs.msg.Int32,queue_size=10)
-    start_scanning = rospy.Publisher('/plc_modbus_control/scan_forward',std_msgs.msg.Float64,queue_size=1)
-    #object_frame_pub = rospy.Publisher('/object_frame_publisher', PoseStamped, queue_size = 1)
-    draw_marker = rospy.Publisher('marker',Marker,queue_size = 1)
+    move_abb_callback()
     rospy.loginfo("________PRESS ENTER TO START THE MOTION____________")
-    raw_input()
-    rospy.Subscriber("target_pose_array",PoseArray,move_abb_callback)
-    rospy.Subscriber("io_pins_status]", Int32, picked_status)
-
     while not rospy.is_shutdown():
-        start_scanning.publish(1.0)
         rospy.spin()
-        
-        #io_status = rospy.wait_for_message("/io_pins_status",std_msgs.msg.Int32)
-        #if io_status == 1 : robot_state_pub.publish(picked)
-        #else : robot_state_pub.publish(not_picked)
-        #abb.turn_vacuum_off()
-             #cartesian_plan, fraction = abb.plan_cartesian_path()
-       #
-    #abb.execute_plan(cartesian_plan)
-    #set_rpy_target(self,rpy,end_effector_link = "") 		
