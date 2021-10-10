@@ -110,9 +110,9 @@ class moveit_planning(object):
         group.set_start_state(current_state)
         group.set_pose_target(wpose,"tool0")
         plan = group.plan()
-        if len(plan.joint_trajectory.points)==0: 	
+        if len(plan.joint_trajectory.points)==0:    
             return 0
-        else: 	
+        else:   
             print("Plan made...Starting Execution")
             a = raw_input()
             if a == 'y':
