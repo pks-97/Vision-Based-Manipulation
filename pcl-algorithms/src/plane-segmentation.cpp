@@ -221,15 +221,24 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   R[2][0], R[2][1], R[2][2], transform.getOrigin().z(),
   0.0, 0.0, 0.0, 1.0;
 
+
   Eigen::Matrix4f TWorld2Obj;
   TWorld2Obj = TWorld2Cam * TCam2Obj;
 
   std::cout << TWorld2Obj << std::endl;
 
+  //The pseudo point where the panda_link_7 reaches to
+  Eigen::Matrix<float, 4, 1> Vector3f = {0, 0, -0.1, 1};
+  Eigen::Matrix<float, 4, 1> finalPosition = TWorld2Obj*Vector3f;
+
+
   geometry_msgs::PoseStamped target_pose;
-  target_pose.pose.position.x = (double) TWorld2Obj(0,3);
-  target_pose.pose.position.y = (double) TWorld2Obj(1,3);
-  target_pose.pose.position.z = (double) TWorld2Obj(2,3);
+  // target_pose.pose.position.x = (double) TWorld2Obj(0,3);
+  // target_pose.pose.position.y = (double) TWorld2Obj(1,3);
+  // target_pose.pose.position.z = (double) TWorld2Obj(2,3);
+  target_pose.pose.position.x = (double) finalPosition(0,0);
+  target_pose.pose.position.y = (double) finalPosition(1,0);
+  target_pose.pose.position.z = (double) finalPosition(2,0);
   Eigen::Matrix3f rot;
   rot << TWorld2Obj(0,0), TWorld2Obj(0,1), TWorld2Obj(0,2),
          TWorld2Obj(1,0), TWorld2Obj(1,1), TWorld2Obj(1,2),
@@ -248,13 +257,13 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   pose_pub.publish(target_pose);
   
   pcl::visualization::PCLVisualizer::Ptr viewer;
-  viewer = simpleVis(object_plane_cloud);
+  // viewer = simpleVis(object_plane_cloud);
 
-  while (!viewer->wasStopped())
-  {
-    viewer->spinOnce(100);
-    std::this_thread::sleep_for(1ms);
-  }
+  // while (!viewer->wasStopped())
+  // {
+  //   viewer->spinOnce(100);
+  //   std::this_thread::sleep_for(1ms);
+  // }
 
   return;
 }
