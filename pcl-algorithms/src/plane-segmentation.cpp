@@ -36,13 +36,29 @@ simpleVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
   return (viewer);
 }
 
+pcl::visualization::PCLVisualizer::Ptr
+simpleVisColor(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+{
+  // --------------------------------------------
+  // -----Open 3D viewer and add point cloud-----
+  // --------------------------------------------
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  viewer->setBackgroundColor(1, 1, 1);
+  viewer->addPointCloud<pcl::PointXYZRGB>(cloud, "sample cloud");
+  viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+  viewer->initCameraParameters();
+  return (viewer);
+}
+
 void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
 {
 
   pcl::PCLPointCloud2 pcl_pc2;
   pcl_conversions::toPCL(*input, pcl_pc2);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudColor(new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::fromPCLPointCloud2(pcl_pc2, *cloud);
+  pcl::fromPCLPointCloud2(pcl_pc2, *cloudColor);
 
   //Normal Computation
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
@@ -83,15 +99,25 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   //               << cloud->points[idx].z << std::endl;
 
   std::vector<int> ids;
+  std::vector<int> idObjs;
+  int nr_points = (int) cloud->size ();
   for(const auto &idx : inliers->indices)
   {
     ids.push_back(idx);
   }
+  // std::cout<<cloud.points<<"\n";
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
+  std::cout<<"Pratyush \n";
+  pcl::ExtractIndices<pcl::PointXYZ> extract;
+  extract.setInputCloud (cloud);
+  extract.setIndices (inliers);
+  extract.setNegative (true);
+  extract.filter (*cloud_p);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr final(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::copyPointCloud(*cloud, ids, *final);
+  pcl::copyPointCloud(*cloud, idObjs, *final);
   pcl::visualization::PCLVisualizer::Ptr viewer;
-  viewer = simpleVis(final);
+  viewer = simpleVisColor(cloudColor);
   while (!viewer->wasStopped())
   {
     viewer->spinOnce(100);
