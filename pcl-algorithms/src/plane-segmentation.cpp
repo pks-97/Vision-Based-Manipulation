@@ -99,23 +99,21 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   //               << cloud->points[idx].z << std::endl;
 
   std::vector<int> ids;
-  std::vector<int> idObjs;
-  int nr_points = (int) cloud->size ();
   for(const auto &idx : inliers->indices)
   {
     ids.push_back(idx);
   }
-  // std::cout<<cloud.points<<"\n";
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
-  std::cout<<"Pratyush \n";
+  
+  pcl::PointCloud<pcl::PointXYZ>::Ptr major_plane_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::copyPointCloud(*cloud, ids, *major_plane_cloud);
+  
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_obj (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::ExtractIndices<pcl::PointXYZ> extract;
   extract.setInputCloud (cloud);
   extract.setIndices (inliers);
   extract.setNegative (true);
-  extract.filter (*cloud_p);
+  extract.filter (*cloud_obj);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr final(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::copyPointCloud(*cloud, idObjs, *final);
   pcl::visualization::PCLVisualizer::Ptr viewer;
   viewer = simpleVisColor(cloudColor);
   while (!viewer->wasStopped())
