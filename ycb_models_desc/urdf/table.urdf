@@ -1,26 +1,8 @@
 <?xml version="1.0"?>
 <robot name="box">
-<!--   <link name="base_link">
-    <visual>
-      <geometry>
-        <cylinder length="0.6" radius="0.2"/>
-      </geometry>
-    </visual>
-  </link>
 
-  <link name="right_leg">
-    <visual>
-      <geometry>
-        <box size="0.6 0.1 0.2"/>
-      </geometry>
-    </visual>
-  </link>
-
-  <joint name="base_to_right_leg" type="fixed">
-    <parent link="base_link"/>
-    <child link="right_leg"/>
-  </joint> -->
   <link name="world"/>
+  
   <link name="base_link">
    <visual>
      <origin xyz="0 0 0" rpy="0 0 0" />
@@ -38,271 +20,44 @@
             <origin xyz="0 0 0" rpy="0 0 0" />
             <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
     </inertial>
-
   </link>
-<!-- 
-  <link name="base_stand">
-   <visual>
-     <origin xyz="1.5 0 0" rpy="0 0 0" />
-     <geometry>
-       <box size="0.1 0.3 2" />
-     </geometry>
-     <material name="Cyan">
-       <color rgba="0 1.0 1.0 1.0"/>
-     </material>
-   </visual>
-    <inertial>
-            <mass value="5" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-
-  </link>
- --><!-- 
-  <link name="camera_attachment">
-   <visual>
-     <origin xyz="-1.0 0 1.0" rpy="0 0 0" />
-     <geometry>
-       <box size="0.1 0.3 0.3" />
-     </geometry>
-     <material name="Cyan">
-       <color rgba="0 1.0 1.0 1.0"/>
-     </material>
-   </visual>
-    <inertial>
-            <mass value="5" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-
-  </link>
-
-
-
-  <link name="horizontal_stand">
-   <visual>
-     <origin xyz="-1.25 0 1.0" rpy="0 0 0" />
-     <geometry>
-       <box size="2 0.3 0.1" />
-     </geometry>
-     <material name="Cyan">
-       <color rgba="0 1.0 1.0 1.0"/>
-     </material>
-   </visual>
-    <inertial>
-            <mass value="5" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-
-  </link> -->
-
-
-<!-- <link name="cylinder_link">
-    <visual>
-      <geometry>
-        <cylinder length="0.02" radius="0.10"/>
-      </geometry>
-     <material name="Red">
-       <color rgba="1.0 0.0 0.0 1.0"/>
-     </material>
-    </visual>
-    <inertial>
-            <mass value="2" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-  </link>
-  <joint name="fixed1" type="fixed">
-    <origin xyz="-0.125 -0.2 0.25" rpy="0 0 3.1416"/>
-    <parent link="base_link"/>
-    <child link="cylinder_link"/>
-  </joint>
-
-
-
-<link name="cylinder_link1">
-    <visual>
-      <geometry>
-        <cylinder length="0.02" radius="0.10"/>
-      </geometry>
-     <material name="Red">
-       <color rgba="1.0 0.0 0.0 1.0"/>
-     </material>
-    </visual>
-    <inertial>
-            <mass value="2" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-  </link>
-  <joint name="fixed2" type="fixed">
-    <origin xyz="0.125 0.2 0.25" rpy="0 0 3.1416"/>
-    <parent link="base_link"/>
-    <child link="cylinder_link1"/>
-  </joint>
-
-
-<link name="cylinder_link3">
-    <visual>
-      <geometry>
-        <cylinder length="0.02" radius="0.10"/>
-      </geometry>
-     <material name="Red">
-       <color rgba="1.0 0.0 0.0 1.0"/>
-     </material>
-    </visual>
-    <inertial>
-            <mass value="2" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-  </link>
-  <joint name="fixed3" type="fixed">
-    <origin xyz="-0.125 0.2 0.25" rpy="0 0 3.1416"/>
-    <parent link="base_link"/>
-    <child link="cylinder_link3"/>
-  </joint> -->
-
-
-<!-- 
-  <link name="camera_link">
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-    <box size="0.3 0.3 0.3"/>
-      </geometry>
-    </collision>
-
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-    <box size="0.3 0.3 0.3"/>
-      </geometry>
-      <material name="red"/>
-    </visual>
-
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-  </link>
- -->
-
-  <!-- <link name="cylinder_link4">
-    <visual>
-      <geometry>
-        <cylinder length="0.02" radius="0.10"/>
-      </geometry>
-     <material name="Red">
-       <color rgba="1.0 0.0 0.0 1.0"/>
-     </material>
-    </visual>
-    <inertial>
-            <mass value="2" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
-    </inertial>
-  </link>
-  <joint name="fixed4" type="fixed">
-    <origin xyz="0.125 -0.2 0.25" rpy="0 0 3.1416"/>
-    <parent link="base_link"/>
-    <child link="cylinder_link4"/>
-  </joint> -->
-
-<!--   <joint name="fixed5" type="fixed">
-    <origin xyz="-0.5 0.0 1.5" rpy="0 0 3.1416"/>
-    <parent link="world"/>
-    <child link="base_stand"/>
-  </joint> -->
-
-<!--   <joint name="fixed6" type="fixed">
-    <origin xyz="-0.75 0.0 0.0" rpy="0 0 3.1416"/>
-    <parent link="base_stand"/>
-    <child link="horizontal_stand"/>
-  </joint>
-
-  <joint name="fixed7" type="fixed">
-    <origin xyz="-1.5 0.0 -0.15" rpy="0 0 3.1416"/>
-    <parent link="base_stand"/>
-    <child link="camera_attachment"/>
-  </joint>
-
-  <joint name="fixedCamera" type="fixed">
-    <origin xyz="-1.0 0 0.70" rpy="0 1.57 0"/>
-    <parent link="camera_attachment"/>
-    <child link="camera_link"/>
-  </joint> -->
-
-  <joint name="fixed" type="fixed">
+  
+  <joint name="base_world_stand" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
 
-
-  <!-- camera -->
-  <!-- <gazebo reference="camera_link">
-    <sensor type="camera" name="camera1">
-      <update_rate>30.0</update_rate>
-      <camera name="head">
-        <horizontal_fov>1.3962634</horizontal_fov>
-        <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>assignment/camera1</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-        <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
-  </gazebo> -->
-
+  <link name="cylinder_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.44" radius="0.10"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="0.44" radius="0.10"/>
+      </geometry>
+    </collision>
+    <inertial>
+            <mass value="2" />
+            <origin xyz="0 0 -0.5" rpy="0 0 0" />
+            <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
+    </inertial>
+  </link>
   
-
-  <!-- <gazebo reference="cylinder_link">
-    <material>Gazebo/Indigo</material>
-  </gazebo> -->
-
-  <!-- <gazebo reference="cylinder_link1">
-    <material>Gazebo/Grass</material>
-  </gazebo>
-
-  <gazebo reference="cylinder_link3">
-    <material>Gazebo/Red</material>
-  </gazebo>
-
-  <gazebo reference="cylinder_link4">
-    <material>Gazebo/Blue</material>
-  </gazebo> -->
-
+  <joint name="table_stand" type="fixed">
+    <origin xyz="-0.125 -0.2 -0.220" rpy="0 0 3.1416"/>
+    <parent link="base_link"/>
+    <child link="cylinder_link"/>
+  </joint>
+  
   <gazebo reference="base_link">
-    <material>Gazebo/Black</material>
+    <material>Gazebo/White</material>
   </gazebo>
-
- <!--  <gazebo reference="camera_link">
-    <material>Gazebo/Orange</material>
-  </gazebo> -->
+  
+  <gazebo reference="cylinder_link">
+    <material>Gazebo/White</material>
+  </gazebo>
 
 </robot>

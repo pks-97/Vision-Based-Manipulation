@@ -61,13 +61,13 @@ class moveit_planning(object):
         group = self.group
         joint_goal = group.get_current_joint_values()
         print(joint_goal)
-        joint_goal[0] = -0.63
-        joint_goal[1] = 0.69
-        joint_goal[2] = 1.35
-        joint_goal[3] = -0.96
-        joint_goal[4] = -0.88
-        joint_goal[5] = 1.21
-        joint_goal[6] = 0.41
+        joint_goal[0] = 2.328	
+        joint_goal[1] = -0.85
+        joint_goal[2] = -1.39
+        joint_goal[3] = -1.042
+        joint_goal[4] = -0.94
+        joint_goal[5] = 1.191
+        joint_goal[6] = 0.98
     
         group.go(joint_goal, wait=True)
 
