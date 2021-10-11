@@ -7,10 +7,10 @@
   <node name="table_spwaner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/table.urdf -urdf -x 1.15 -y 0.0 -z 0.45 -model table"/>
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="mustard_bottle_spwaner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/mustard_bottle.urdf -urdf -x 0.65 -y 0.20 -z 0.464 -model mustard_bottle"/>
+  <!--node name="mustard_bottle_spwaner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/mustard_bottle.urdf -urdf -x 0.65 -y 0.20 -z 0.464 -model mustard_bottle"/-->
   
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="power_drill_spwaner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/power_drill.urdf -urdf -x 0.65 -y -0.20 -z 0.465 -model power_drill"/>
+  <!--node name="power_drill_spwaner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/power_drill.urdf -urdf -x 0.65 -y -0.20 -z 0.465 -model power_drill"/-->
 
   <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
   <node name="pudding_box_spwaner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-file $(find ycb_models_desc)/urdf/pudding_box.urdf -urdf -x 0.65 -y 0.0 -z 0.465  -model pudding_box"/>
