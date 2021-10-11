@@ -2,24 +2,26 @@
 <robot name="pudding_box">
   <link name="box_link">
     <contact>
-      <lateral_friction value="0.8"/>
+      <lateral_friction value="0.0008"/>
       <rolling_friction value="0.001"/>
       <spinning_friction value="0.001"/>
     </contact>
     <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://ycb_models_desc/models/ycb/008_pudding_box/poisson/textured.obj"/>
       </geometry>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://ycb_models_desc/models/ycb/008_pudding_box/poisson/textured.obj"/>
       </geometry>
     </collision>
     <inertial>
        <mass value="0.1" />
-       <origin xyz="0.1 0 0" rpy="0 0 0" />
-       <inertia ixx="0.004" ixy="0.001" ixz="0" iyy="0.006" iyz="0" izz="0.007" />
+       <origin xyz="-0.015 0 0.05" rpy="0 0 0" />
+       <inertia ixx="0.00000" ixy="0.00" ixz="0.00" iyy="0.00000" iyz="0.00" izz="0.0000001" />
     </inertial>
   </link>
   
