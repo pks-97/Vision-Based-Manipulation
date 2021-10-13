@@ -13,6 +13,7 @@ from geometry_msgs.msg import PoseStamped,PoseArray
 from math import pi
 from std_msgs.msg import String, Float64, Int32
 from moveit_commander.conversions import pose_to_list
+import sensor_msgs.point_cloud2 as pc2
 # visualisation marker
 from visualization_msgs.msg import Marker
 
@@ -97,14 +98,36 @@ class moveit_planning(object):
         wpose.header.stamp = rospy.Time()
         wpose.header.frame_id = "/world"
 
+  # position: 
+  #   x: 0.6417985558509827
+  #   y: 0.014854976907372475
+  #   z: 0.6817941665649414
+  # orientation: 
+  #   x: 0.34433943033218384
+  #   y: 0.9358659386634827
+  #   z: -0.026344887912273407
+  #   w: 0.02726620249450206
+
+  # position: 
+  #   x: 0.6425893902778625
+  #   y: 0.013632533140480518
+  #   z: 0.6831778287887573
+  # orientation: 
+  #   x: 0.25365152955055237
+  #   y: 0.9664899706840515
+  #   z: 0.014226187951862812
+  #   w: -0.013217533007264137
+
+
         # print("original_target_XYZ",target.position)
-        wpose.pose.position.x = 0.6407433152198792
-        wpose.pose.position.y = 0.016577964648604393
-        wpose.pose.position.z = 0.6739858388900757
-        wpose.pose.orientation.x = -0.37462443113327026 #target.orientation.x
-        wpose.pose.orientation.y = 0.9207479953765869 #target.orientation.y
-        wpose.pose.orientation.z = -0.05432102829217911 #target.orientation.z
-        wpose.pose.orientation.w = 0.0008799447095952928 #target.orientation.w
+        wpose.pose.position.x= 0.6425893902778625
+        wpose.pose.position.y= 0.013632533140480518
+        wpose.pose.position.z = 0.6831778287887573
+        wpose.pose.orientation.x = 0.25365152955055237 #target.orientation.x
+        wpose.pose.orientation.y = 0.9664899706840515 #target.orientation.y
+        wpose.pose.orientation.z = 0.014226187951862812 #target.orientation.z
+        wpose.pose.orientation.w = -0.013217533007264137 #target.orientation.w
+
         #object_frame_pub,publish(wpose)
         print("Planning for the target :--> ")
         print(wpose)
@@ -112,7 +135,7 @@ class moveit_planning(object):
         group.set_planning_time(10)
         group.set_start_state(current_state)
         group.set_pose_target(wpose,"panda_link7")
-
+        group.set_goal_tolerance(0.001)
         plan = group.plan()
         print("Pratyush")
         print(plan[1].joint_trajectory)
@@ -120,18 +143,55 @@ class moveit_planning(object):
         # group.execute(plan[1].joint_trajectory.points,wait=True)
         group.go(wait=True)
         ans = Float64()
-        ans.data = 0.0
+        ans.data = 0.1
         pub.publish(ans)
         pub1.publish(ans)
         print("Executed the Target")
         rospy.sleep(0.1)
         return 1 
     
+    def moveRight(self):
+        scale = 1.0
+        global object_frame_pub
+        group = self.group
+        robot = self.robot
+        waypoints = []
+        current_state = robot.get_current_state()
+        wpose = group.get_current_pose().pose
+        wpose.position.x += scale * 0.5
+        wpose.position.y += scale * 0.0
+        wpose.position.z += scale * 0.0
+        waypoints.append(copy.deepcopy(wpose))
+        (plan, fraction) = group.compute_cartesian_path(
+    waypoints, 0.01, 0.0  # waypoints to follow  # eef_step
+)
+        group.execute(plan, wait=True)
+        # js = rospy.wait_for_message('/panda_camera/depth/points', pc2)
+        return 1 
+
+    def moveLeft(self):
+        scale = 1.0
+        global object_frame_pub
+        group = self.group
+        robot = self.robot
+        waypoints = []
+        current_state = robot.get_current_state()
+        wpose = group.get_current_pose().pose
+        wpose.position.y += scale * (-0.2)
+        waypoints.append(copy.deepcopy(wpose))
+        (plan, fraction) = group.compute_cartesian_path(
+    waypoints, 0.01, 0.0  # waypoints to follow  # eef_step
+)
+        group.execute(plan, wait=True)
+        # js = rospy.wait_for_message('/panda_camera/depth/points', pc2)
+        return 1 
 
 def move_abb_callback():
     global abb
     # abb.go_to_sleep_position()
     abb.execute()
+    # abb.moveRight()
+    # abb.moveLeft()
 
 if __name__ == '__main__':
     abb = moveit_planning()

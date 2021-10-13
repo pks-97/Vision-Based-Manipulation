@@ -55,13 +55,13 @@ simpleVisColor(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
   return (viewer);
 }
 
-void planeSegmentation(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud, pcl::ModelCoefficients::Ptr coefficients, pcl::PointIndices::Ptr inliers)
+void planeSegmentation(pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud, pcl::ModelCoefficients::Ptr coefficients, pcl::PointIndices::Ptr inliers, float threshold)
 {
   pcl::SACSegmentation<pcl::PointXYZ> seg;
   seg.setOptimizeCoefficients(true);
   seg.setModelType(pcl::SACMODEL_PLANE);
   seg.setMethodType(pcl::SAC_RANSAC);
-  seg.setDistanceThreshold(0.01);
+  seg.setDistanceThreshold(threshold);
   seg.setInputCloud(cloud);
   seg.segment(*inliers, *coefficients);
 }
@@ -97,9 +97,10 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   pcl::fromPCLPointCloud2(pcl_pc2, *cloudColor);
 
   // Plane segementation for removing major plane
+  float threshold  = 0.0005;
   pcl::ModelCoefficients::Ptr coefficients_major_plane(new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers_major_plane(new pcl::PointIndices);
-  planeSegmentation(cloud, coefficients_major_plane, inliers_major_plane);
+  planeSegmentation(cloud, coefficients_major_plane, inliers_major_plane, threshold);
 
   if (inliers_major_plane->indices.size() == 0)
   {
@@ -138,7 +139,7 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   // Plane segementation for getting object plane
   pcl::ModelCoefficients::Ptr coefficients_object_plane(new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers_object_plane(new pcl::PointIndices);
-  planeSegmentation(object_cloud, coefficients_object_plane, inliers_object_plane);
+  planeSegmentation(object_cloud, coefficients_object_plane, inliers_object_plane, threshold);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr object_plane_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -214,6 +215,22 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
     return;
   }
 
+
+
+// looking up transform of link to hand
+  tf::TransformListener listener1;
+  tf::StampedTransform transform1;
+  try
+  {
+    listener1.waitForTransform("/panda_hand", "/panda_link7", ros::Time(0), ros::Duration(1.0));
+    listener1.lookupTransform("/panda_hand", "/panda_link7", ros::Time(0), transform1);
+  }
+  catch (tf::TransformException ex)
+  {
+    ROS_ERROR("%s", ex.what());
+    return;
+  }
+
   tf::Matrix3x3 R(transform.getRotation());
   Eigen::Matrix4f TWorld2Cam;
   TWorld2Cam << R[0][0], R[0][1], R[0][2], transform.getOrigin().x(),
@@ -222,64 +239,60 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   0.0, 0.0, 0.0, 1.0;
 
 
-  Eigen::Matrix4f TWorld2Obj;
-  TWorld2Obj = TWorld2Cam * TCam2Obj;
-
-  std::cout << TWorld2Obj << std::endl;
-  
-//  
-  tf::TransformListener listener2;
-  tf::StampedTransform transform2;
-  try
-  {
-    listener2.waitForTransform("/panda_rightfinger", "/panda_link7", ros::Time(0), ros::Duration(1.0));
-    listener2.lookupTransform("/panda_rightfinger", "/panda_link7", ros::Time(0), transform2);
-  }
-  catch (tf::TransformException ex)
-  {
-    ROS_ERROR("%s", ex.what());
-    return;
-  }
-
-  tf::Matrix3x3 R2(transform2.getRotation());
-  Eigen::Matrix4f TObj2link7;
-  TWorld2Cam << R2[0][0], R2[0][1], R2[0][2], transform2.getOrigin().x(),
-  R2[1][0], R2[1][1], R2[1][2], transform2.getOrigin().y(),
-  R2[2][0], R2[2][1], R2[2][2], transform2.getOrigin().z(),
+  tf::Matrix3x3 R1(transform1.getRotation());
+  Eigen::Matrix4f THand2link;
+  THand2link << R1[0][0], R1[0][1], R1[0][2], transform1.getOrigin().x(),
+  R1[1][0], R1[1][1], R1[1][2], transform1.getOrigin().y(),
+  R1[2][0], R1[2][1], R1[2][2], transform1.getOrigin().z(),
   0.0, 0.0, 0.0, 1.0;
 
-  Eigen::Matrix4f TWorld2link7;
-  TWorld2link7 = TWorld2Obj * TObj2link7;
 
-  std::cout << TWorld2link7 << std::endl;
-//
+  Eigen::Matrix4f TWorld2Obj, TWorld2link;
+  TWorld2Obj = TWorld2Cam * TCam2Obj;
+  TWorld2link = TWorld2Obj * THand2link;
+  std::cout << TWorld2Obj << std::endl;
 
-  geometry_msgs::PoseStamped target_pose;  
-  target_pose.pose.position.x = (double) TWorld2link7(0,3);
-  target_pose.pose.position.y = (double) TWorld2link7(1,3);
-  target_pose.pose.position.z = (double) TWorld2link7(2,3);
+  //The pseudo point where the panda_link_7 reaches to
+  Eigen::Matrix<float, 4, 1> Vector3f = {0, 0, -0.1, 1};
+  Eigen::Matrix<float, 4, 1> finalPosition = TWorld2Obj*Vector3f;
+
+
+  geometry_msgs::PoseStamped target_pose;
+  // target_pose.pose.position.x = TWorld2Obj(0,3);
+  // target_pose.pose.position.y = TWorld2Obj(1,3);
+  // target_pose.pose.position.z = TWorld2Obj(2,3);
+  target_pose.pose.position.x =  TWorld2link(0,3);
+  target_pose.pose.position.y =  TWorld2link(1,3);
+  target_pose.pose.position.z =  TWorld2link(2,3);
   Eigen::Matrix3f rot;
-  rot << TWorld2link7(0,0), TWorld2link7(0,1), TWorld2link7(0,2),
-         TWorld2link7(1,0), TWorld2link7(1,1), TWorld2link7(1,2),
-         TWorld2link7(2,0), TWorld2link7(2,1), TWorld2link7(2,2);
+  rot << TWorld2Obj(0,0), TWorld2Obj(0,1), TWorld2Obj(0,2),
+         TWorld2Obj(1,0), TWorld2Obj(1,1), TWorld2Obj(1,2),
+         TWorld2Obj(2,0), TWorld2Obj(2,1), TWorld2Obj(2,2);
         
-  std::cout << rot << std::endl;
+  Eigen::Matrix3f rot1;
+  rot1 << TWorld2link(0,0), TWorld2link(0,1), TWorld2link(0,2),
+         TWorld2link(1,0), TWorld2link(1,1), TWorld2link(1,2),
+         TWorld2link(2,0), TWorld2link(2,1), TWorld2link(2,2);
+
+
+  std::cout << rot1 << std::endl;
   Eigen::Quaternionf q(rot);
-  target_pose.pose.orientation.x = q.x();
-  target_pose.pose.orientation.y = q.y();
-  target_pose.pose.orientation.z = q.z();
-  target_pose.pose.orientation.w = q.w();
+  Eigen::Quaternionf q1(rot1);
+  target_pose.pose.orientation.x = q1.x();
+  target_pose.pose.orientation.y = q1.y();
+  target_pose.pose.orientation.z = q1.z();
+  target_pose.pose.orientation.w = q1.w();
 
   target_pose.header.frame_id = "world";
   target_pose.header.stamp = ros::Time::now();
   pose_pub.publish(target_pose);
   
-  pcl::visualization::PCLVisualizer::Ptr viewer;
+  // pcl::visualization::PCLVisualizer::Ptr viewer;
   // viewer = simpleVis(object_plane_cloud);
 
   // while (!viewer->wasStopped())
   // {
-  //   viewer->spinOnce(100);
+  //   viewer->spinOnce(1);
   //   std::this_thread::sleep_for(1ms);
   // }
 

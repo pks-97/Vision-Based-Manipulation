@@ -25,7 +25,8 @@ panda:
             panda_joint7: { p: 2000, d: 20, i: 0.0, i_clamp: 1 }
 
         constraints:
-            goal_time: 2.0
+            goal_time: 20.0
+            stopped_velocity_tolerance: 0
 
         state_publish_rate: 25
     panda_finger1_controller:
