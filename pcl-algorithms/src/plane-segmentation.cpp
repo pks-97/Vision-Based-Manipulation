@@ -226,25 +226,43 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr &input)
   TWorld2Obj = TWorld2Cam * TCam2Obj;
 
   std::cout << TWorld2Obj << std::endl;
+  
+//  
+  tf::TransformListener listener2;
+  tf::StampedTransform transform2;
+  try
+  {
+    listener2.waitForTransform("/panda_rightfinger", "/panda_link7", ros::Time(0), ros::Duration(1.0));
+    listener2.lookupTransform("/panda_rightfinger", "/panda_link7", ros::Time(0), transform2);
+  }
+  catch (tf::TransformException ex)
+  {
+    ROS_ERROR("%s", ex.what());
+    return;
+  }
 
-  //The pseudo point where the panda_link_7 reaches to
-  Eigen::Matrix<float, 4, 1> Vector3f = {0, 0, -0.1, 1};
-  Eigen::Matrix<float, 4, 1> finalPosition = TWorld2Obj*Vector3f;
+  tf::Matrix3x3 R2(transform2.getRotation());
+  Eigen::Matrix4f TObj2link7;
+  TWorld2Cam << R2[0][0], R2[0][1], R2[0][2], transform2.getOrigin().x(),
+  R2[1][0], R2[1][1], R2[1][2], transform2.getOrigin().y(),
+  R2[2][0], R2[2][1], R2[2][2], transform2.getOrigin().z(),
+  0.0, 0.0, 0.0, 1.0;
 
+  Eigen::Matrix4f TWorld2link7;
+  TWorld2link7 = TWorld2Obj * TObj2link7;
 
-  geometry_msgs::PoseStamped target_pose;
-  // target_pose.pose.position.x = (double) TWorld2Obj(0,3);
-  // target_pose.pose.position.y = (double) TWorld2Obj(1,3);
-  // target_pose.pose.position.z = (double) TWorld2Obj(2,3);
-  target_pose.pose.position.x = (double) finalPosition(0,0);
-  target_pose.pose.position.y = (double) finalPosition(1,0);
-  target_pose.pose.position.z = (double) finalPosition(2,0);
+  std::cout << TWorld2link7 << std::endl;
+//
+
+  geometry_msgs::PoseStamped target_pose;  
+  target_pose.pose.position.x = (double) TWorld2link7(0,3);
+  target_pose.pose.position.y = (double) TWorld2link7(1,3);
+  target_pose.pose.position.z = (double) TWorld2link7(2,3);
   Eigen::Matrix3f rot;
-  rot << TWorld2Obj(0,0), TWorld2Obj(0,1), TWorld2Obj(0,2),
-         TWorld2Obj(1,0), TWorld2Obj(1,1), TWorld2Obj(1,2),
-         TWorld2Obj(2,0), TWorld2Obj(2,1), TWorld2Obj(2,2);
+  rot << TWorld2link7(0,0), TWorld2link7(0,1), TWorld2link7(0,2),
+         TWorld2link7(1,0), TWorld2link7(1,1), TWorld2link7(1,2),
+         TWorld2link7(2,0), TWorld2link7(2,1), TWorld2link7(2,2);
         
-
   std::cout << rot << std::endl;
   Eigen::Quaternionf q(rot);
   target_pose.pose.orientation.x = q.x();
